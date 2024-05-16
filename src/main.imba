@@ -77,15 +77,17 @@ tag AddTransaction
 	def onSubmit
 		emit('onSubmit', {text, amount: parseFloat(amount) or 0})
 
+	def focus
+		$text.focus!
+
 	<self>
-		<form @submit.prevent=onSubmit>
-			<div> "Add Transaction"
-			<hr>
-			<label> "Text"
-				<input placeholder='Enter text...' bind=text required>
-			<label> "Amount (negative-expense, positive-income)"
-				<input placeholder='Enter amount...' bind=amount required >
-			<button[bg:purple2 bd:1px]> "Add transaction"
+		<div> "Add Transaction"
+		<hr>
+		<label> "Text"
+			<input$text placeholder='Enter text...' bind=text required @keydown.enter=$amount.focus!>
+		<label> "Amount (negative-expense, positive-income)"
+			<input$amount placeholder='Enter amount...' bind=amount @keydown.enter=$submit.focus!>
+		<button$submit[bg:purple2 bd:1px] @click=onSubmit> "Add transaction"
 
 tag App
 	def handleAdd e
@@ -93,12 +95,13 @@ tag App
 		tx.add {text, amount}
 		text = ''
 		amount = ''
+		$addForm.focus!
 
 	<self>
 		<Header>
 		<Balance [bg:blue2] data=tx.balance>
 		<ExpenseIncome[bg:yellow2] data=[tx.getIncome!, tx.getExpense!]>
 		<TransactionList[bg:teal2] >
-		<AddTransaction[bg:rose2] @onSubmit=handleAdd>
+		<AddTransaction$addForm[bg:rose2] @onSubmit=handleAdd>
 
 imba.mount <App>

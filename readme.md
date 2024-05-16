@@ -10,5 +10,6 @@
 - [x] JS - Event handling
 - [x] JS - persist to local storage
 - [x] JS - Transactions class
+- [-] TS - (FAIL) define type in types.ts (still lint error)
 - [ ] CSS
 - [ ] deploy

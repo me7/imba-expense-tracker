@@ -1,4 +1,6 @@
-class Transactions
+import type {Transaction, Transactions} from './types'
+
+class Tx\Transactions
 	constructor
 		income = 0
 		expense = 0
@@ -14,7 +16,7 @@ class Transactions
 	def persist
 		global.localStorage.setItem('imba-expense-tracker', JSON.stringify(txList))
 
-	def add t
+	def add t\Transaction
 		txList.push t
 		if t.amount > 0 then income += t.amount else expense += t.amount
 		total = income + expense
@@ -41,7 +43,7 @@ class Transactions
 
 let text\string
 let amount\number
-let tx = new Transactions()
+let tx = new Tx()
 tx.load!
 
 tag Header

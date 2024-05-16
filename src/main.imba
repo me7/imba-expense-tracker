@@ -1,37 +1,48 @@
+class Transactions
+	constructor
+		income = 0
+		expense = 0
+		total = 0
+		txList = []
+
+	def load
+		txList = JSON.parse(global.localStorage.getItem('imba-expense-tracker')) or []
+		for t in transactions
+			if t.amount > 0 then income += t.amount else expense += t.amount
+			total = income + expense
+
+	def persist
+		global.localStorage.setItem('imba-expense-tracker', JSON.stringify(txList))
+
+	def add t
+		txList.push t
+		if t.amount > 0 then income += t.amount else expense += t.amount
+		total = income + expense
+		persist!
+
+	def del index
+		{text, amount} = txList[index]
+		if amount > 0 then income += amount else expense += amount
+		total = income + expense
+		txList.splice(index, 1)
+		persist!
+
+	get transactions
+		txList
+
+	get balance
+		total
+
+	def getIncome
+		income
+
+	def getExpense
+		expense
+
 let text\string
 let amount\number
-let transactions = [
-	{text:'Sneakers', amount: -200}
-	{text:'Paycheck', amount: 900}
-	{text:'Food', amount: -100}
-]
-
-def load
-	transactions = JSON.parse(localStorage.getItem('imba-expense-tracker')) or []
-
-def persist
-	localStorage.setItem('imba-expense-tracker', JSON.stringify(transactions))
-
-def balance
-	let total = 0
-	for t in transactions
-		total += t.amount
-	total
-
-def income
-	let total = 0
-	for t in transactions
-		if t.amount > 0
-			total += t.amount
-	total
-
-def expense
-	let total = 0
-	for t in transactions
-		if t.amount < 0
-			total += t.amount
-	total
-
+let tx = new Transactions()
+tx.load!
 
 tag Header
 	<self[fs:xl]> "Expense Tracker"
@@ -48,14 +59,13 @@ tag ExpenseIncome
 
 tag TransactionList
 	def handleDelete i
-		transactions.splice(i, 1)
-		persist!
+		tx.del i
 
 	<self @click.log(data)>
 		<div> "History"
 		<hr>
 		<ul>
-			for t, i in data
+			for t, i in tx.transactions
 				<li> "{t.text} ${t.amount}"
 					<button @click=handleDelete(i)> "Delete"
 
@@ -70,23 +80,19 @@ tag AddTransaction
 			<label> "Text"
 				<input placeholder='Enter text...' bind=text required>
 			<label> "Amount (negative-expense, positive-income)"
-				<input placelholder='Enter amount...' bind=amount required >
+				<input placeholder='Enter amount...' bind=amount required >
 			<button[bg:purple2 bd:1px]> "Add transaction"
 
 tag App
 	def handleAdd e
 		{text, amount} = e.detail
-		transactions.push {text, amount}
-		persist!
-
-	def setup
-		load!
+		tx.add {text, amount}
 
 	<self>
 		<Header>
-		<Balance [bg:blue2] data=balance!>
-		<ExpenseIncome[bg:yellow2] data=[income!, expense!]>
-		<TransactionList[bg:teal2] data=transactions>
+		<Balance [bg:blue2] data=tx.balance>
+		<ExpenseIncome[bg:yellow2] data=[tx.getIncome!, tx.getExpense!]>
+		<TransactionList[bg:teal2] >
 		<AddTransaction[bg:rose2] @onSubmit=handleAdd>
 
 imba.mount <App>

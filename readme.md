@@ -9,5 +9,6 @@
 - [x] HTML - div list form
 - [x] JS - Event handling
 - [x] JS - persist to local storage
+- [x] JS - Transactions class
 - [ ] CSS
 - [ ] deploy

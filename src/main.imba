@@ -2,9 +2,9 @@ import type {Transaction, Transactions} from './types'
 
 class Tx\Transactions
 	constructor
-		income = 0
-		expense = 0
-		total = 0
+		income\number = 0
+		expense\number = 0
+		total\number = 0
 		txList = []
 
 	def load
@@ -17,6 +17,8 @@ class Tx\Transactions
 		global.localStorage.setItem('imba-expense-tracker', JSON.stringify(txList))
 
 	def add t\Transaction
+		if t.amount == 0 
+			return
 		txList.push t
 		if t.amount > 0 then income += t.amount else expense += t.amount
 		total = income + expense
@@ -24,7 +26,7 @@ class Tx\Transactions
 
 	def del index
 		{text, amount} = txList[index]
-		if amount > 0 then income += amount else expense += amount
+		if amount > 0 then income -= amount else expense -= amount
 		total = income + expense
 		txList.splice(index, 1)
 		persist!
@@ -42,7 +44,7 @@ class Tx\Transactions
 		expense
 
 let text\string
-let amount\number
+let	amount
 let tx = new Tx()
 tx.load!
 
@@ -89,6 +91,8 @@ tag App
 	def handleAdd e
 		{text, amount} = e.detail
 		tx.add {text, amount}
+		text = ''
+		amount = ''
 
 	<self>
 		<Header>

@@ -6,6 +6,12 @@ let transactions = [
 	{text:'Food', amount: -100}
 ]
 
+def load
+	transactions = JSON.parse(localStorage.getItem('imba-expense-tracker')) or []
+
+def persist
+	localStorage.setItem('imba-expense-tracker', JSON.stringify(transactions))
+
 def balance
 	let total = 0
 	for t in transactions
@@ -43,6 +49,7 @@ tag ExpenseIncome
 tag TransactionList
 	def handleDelete i
 		transactions.splice(i, 1)
+		persist!
 
 	<self @click.log(data)>
 		<div> "History"
@@ -70,6 +77,10 @@ tag App
 	def handleAdd e
 		{text, amount} = e.detail
 		transactions.push {text, amount}
+		persist!
+
+	def setup
+		load!
 
 	<self>
 		<Header>

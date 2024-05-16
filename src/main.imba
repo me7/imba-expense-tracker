@@ -1,34 +1,5 @@
-tag Header
-	<self[fs:xl]> "Expense Tracker"
-
-tag Balance
-	<self>
-		<div> "YOUR BALANCE"
-		<div> "${data}"
-
-tag ExpenseIncome
-	<self>
-		<div> "INCOME +${data[0]}"
-		<div> "EXPENSE -${data[1]}"
-
-tag TransactionList
-	<self @click.log(data)>
-		<div> "History"
-		<hr>
-		<ul>
-			for t in data
-				<li> "{t.text} ${t.amount}"
-
-tag AddTransaction
-	<self>
-		<div> "Add Transaction"
-		<hr>
-		<label> "Text"
-			<input placeholder='Enter text...'>
-		<label> "Amount (negative-expense, positive-income)"
-			<input placelholder='Enter amount...'>
-		<button[bg:purple2 bd:1px]> "Add transaction"
-
+let text\string
+let amount\number
 let transactions = [
 	{text:'Sneakers', amount: -200}
 	{text:'Paycheck', amount: 900}
@@ -55,12 +26,56 @@ def expense
 			total += t.amount
 	total
 
+
+tag Header
+	<self[fs:xl]> "Expense Tracker"
+
+tag Balance
+	<self>
+		<div> "YOUR BALANCE"
+		<div> "${data}"
+
+tag ExpenseIncome
+	<self>
+		<div> "INCOME +${data[0]}"
+		<div> "EXPENSE -${data[1]}"
+
+tag TransactionList
+	def handleDelete i
+		transactions.splice(i, 1)
+
+	<self @click.log(data)>
+		<div> "History"
+		<hr>
+		<ul>
+			for t, i in data
+				<li> "{t.text} ${t.amount}"
+					<button @click=handleDelete(i)> "Delete"
+
+tag AddTransaction
+	def onSubmit
+		emit('onSubmit', {text, amount: parseFloat(amount) or 0})
+
+	<self>
+		<form @submit.prevent=onSubmit>
+			<div> "Add Transaction"
+			<hr>
+			<label> "Text"
+				<input placeholder='Enter text...' bind=text required>
+			<label> "Amount (negative-expense, positive-income)"
+				<input placelholder='Enter amount...' bind=amount required >
+			<button[bg:purple2 bd:1px]> "Add transaction"
+
 tag App
+	def handleAdd e
+		{text, amount} = e.detail
+		transactions.push {text, amount}
+
 	<self>
 		<Header>
 		<Balance [bg:blue2] data=balance!>
-		<ExpenseIncome data=[income!, expense!]>
+		<ExpenseIncome[bg:yellow2] data=[income!, expense!]>
 		<TransactionList[bg:teal2] data=transactions>
-		<AddTransaction>
+		<AddTransaction[bg:rose2] @onSubmit=handleAdd>
 
 imba.mount <App>

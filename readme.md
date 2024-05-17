@@ -11,5 +11,5 @@
 - [x] JS - persist to local storage
 - [x] JS - Transactions class
 - [-] TS - (FAIL) define type in types.ts (still lint error)
-- [ ] CSS
-- [ ] deploy
+- [x] CSS convert and font from @fontsource/lato
+- [X] deploy to https://imba-expense-tracker.surge.sh/

@@ -1,4 +1,25 @@
 import type {Transaction, Transactions} from './types'
+import '@fontsource/lato';
+
+# import './style.css'
+
+global css @root
+	#bg3:lch(50 100 100 / 0.5)
+
+css
+	body bg:#f7f7f7 d:vflex ja:center min-height:100vh m:0 ff:"Lato", sans-serif fs:18px
+	.container m:30px w:100
+	h1 m:0 ls:1px
+	h3 bdb:1px #bbbbbb pb:10px m:40px 0 10px
+	h4 m:0 tt:uppercase
+	.inc-exp-container bg:white bxs:lg d:flex p:20px m:20px 0 jc:space-between 
+	.inc-exp-container > div@first-of-type fl:1 bdr:1px solid #dedede
+	.money fs:20px ls:1px mx:5px
+	.money.plus c: #2ecc71
+	.money.minus c:#c0392b
+	label d:inline-block m:10px 0
+	input d:block fs:16px rd:2px bd:1px solid #dedede p:10px w:100%
+	.btn p:10px m:10px 0 30px c:white bg:#9c88ff cursor:pointer bd:0 fs:16px
 
 class Tx\Transactions
 	constructor
@@ -49,25 +70,30 @@ let tx = new Tx()
 tx.load!
 
 tag Header
-	<self[fs:xl]> "Expense Tracker"
+	<self> 
+		<h2> "Expense Tracker"
 
 tag Balance
 	<self>
-		<div> "YOUR BALANCE"
-		<div> "${data}"
+		<h4> "Your Balance"
+		<h1#balance> "${data}"
 
 tag ExpenseIncome
 	<self>
-		<div> "INCOME +${data[0]}"
-		<div> "EXPENSE -${data[1]}"
+		<div.inc-exp-container>
+			<div>
+				<h4> "Income"
+					<p.money.plus> "+${data[0]}"
+			<div>
+				<h4> "Expense" 
+					<p.money.minus> "${data[1]}"
 
 tag TransactionList
 	def handleDelete i
 		tx.del i
 
 	<self @click.log(data)>
-		<div> "History"
-		<hr>
+		<h3> "History"
 		<ul>
 			for t, i in tx.transactions
 				<li> "{t.text} ${t.amount}"
@@ -81,13 +107,12 @@ tag AddTransaction
 		$text.focus!
 
 	<self>
-		<div> "Add Transaction"
-		<hr>
+		<h3> "Add Transaction"
 		<label> "Text"
-			<input$text placeholder='Enter text...' bind=text required @keydown.enter=$amount.focus!>
+		<input$text placeholder='Enter text...' bind=text required @keydown.enter=$amount.focus!>
 		<label> "Amount (negative-expense, positive-income)"
-			<input$amount placeholder='Enter amount...' bind=amount @keydown.enter=$submit.focus!>
-		<button$submit[bg:purple2 bd:1px] @click=onSubmit> "Add transaction"
+		<input$amount placeholder='Enter amount...' bind=amount @keydown.enter=$submit.focus!>
+		<button$submit .btn @click=onSubmit> "Add transaction"
 
 tag App
 	def handleAdd e
@@ -98,10 +123,11 @@ tag App
 		$addForm.focus!
 
 	<self>
-		<Header>
-		<Balance [bg:blue2] data=tx.balance>
-		<ExpenseIncome[bg:yellow2] data=[tx.getIncome!, tx.getExpense!]>
-		<TransactionList[bg:teal2] >
-		<AddTransaction$addForm[bg:rose2] @onSubmit=handleAdd>
+		<div.container>
+			<Header>
+			<Balance data=tx.balance>
+			<ExpenseIncome data=[tx.getIncome!, tx.getExpense!]>
+			<TransactionList >
+			<AddTransaction$addForm @onSubmit=handleAdd>
 
 imba.mount <App>

@@ -9,5 +9,8 @@
   "devDependencies": {
     "imba": "*",
     "vite": "*"
+  },
+  "dependencies": {
+    "@fontsource/lato": "^5.0.21"
   }
 }
